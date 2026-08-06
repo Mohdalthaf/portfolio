@@ -86,7 +86,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
 
   return (
     <div
-      className={`relative flex flex-wrap items-center gap-2 ${className}`.trim()}
+      className={`relative isolate flex flex-wrap items-center gap-2 ${className}`.trim()}
       ref={containerRef}
       style={{ outline: 'none', userSelect: 'none' }}
     >
@@ -98,7 +98,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
             ref={el => {
               wordRefs.current[index] = el;
             }}
-            className={`relative cursor-pointer ${wordClassName || 'text-[3rem] font-black'}`.trim()}
+            className={`relative cursor-pointer ${isActive ? "z-10" : "z-0"} ${wordClassName || 'text-[3rem] font-black'}`.trim()}
             style={
               {
                 filter: manualMode
@@ -122,7 +122,7 @@ const TrueFocus: React.FC<TrueFocusProps> = ({
       })}
 
       <motion.div
-        className="absolute top-0 left-0 pointer-events-none box-border border-0"
+        className="pointer-events-none absolute left-0 top-0 z-20 box-border border-0"
         animate={{
           x: focusRect.x,
           y: focusRect.y,

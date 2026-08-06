@@ -1,6 +1,7 @@
 import "devicon/devicon.min.css";
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+import { siteConfig, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -9,44 +10,54 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-const siteUrl = "https://mohammedalthaf.dev";
-
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Mohammed Althaf T K — Frontend Developer",
-    template: "%s — Mohammed Althaf T K",
+    default: siteConfig.title,
+    template: `%s | ${siteConfig.name}`,
   },
-  description:
-    "Frontend Developer specializing in React, Next.js, and scalable web applications. Building fast, accessible interfaces and full-stack products.",
-  keywords: [
-    "Mohammed Althaf",
-    "Frontend Developer",
-    "React Developer",
-    "Next.js Developer",
-    "Full Stack Developer",
-    "Kochi Kerala",
-    "Web Developer Portfolio",
-  ],
-  authors: [{ name: "Mohammed Althaf T K", url: siteUrl }],
-  creator: "Mohammed Althaf T K",
+  description: siteConfig.description,
+  keywords: [...siteConfig.keywords],
+  authors: [{ name: siteConfig.name, url: siteConfig.url }],
+  creator: siteConfig.name,
+  publisher: siteConfig.name,
+  applicationName: siteConfig.shortName,
+  category: "technology",
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     type: "website",
-    url: siteUrl,
-    title: "Mohammed Althaf T K — Frontend Developer",
-    description:
-      "Frontend Developer specializing in React, Next.js, and scalable web applications.",
-    siteName: "Mohammed Althaf T K",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    locale: siteConfig.locale,
+    url: siteConfig.url,
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [
+      {
+        url: siteConfig.ogImage,
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.name} — portfolio preview`,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mohammed Althaf T K — Frontend Developer",
-    description:
-      "Frontend Developer specializing in React, Next.js, and scalable web applications.",
-    images: ["/og-image.png"],
+    title: siteConfig.title,
+    description: siteConfig.description,
+    images: [siteConfig.ogImage],
   },
-  robots: { index: true, follow: true },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({

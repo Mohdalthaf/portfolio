@@ -8,6 +8,7 @@ import { Work } from "@/components/sections/work";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { SectionNavProvider } from "@/components/section-nav";
+import { Toaster } from "@/components/ui/sonner";
 import SplashCursor from "@/components/SplashCursor";
 import Particles from "@/components/Particles";
 
@@ -49,6 +50,7 @@ export function PortfolioShell() {
           <Footer />
         </div>
       </main>
+      <Toaster />
     </SectionNavProvider>
   );
 }

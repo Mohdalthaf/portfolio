@@ -166,8 +166,9 @@ export function Hero() {
   return (
     <section className="relative flex min-h-screen flex-col justify-center pt-35 pb-12">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6">
-        <div className="grid grid-cols-1 items-center gap-10 overflow-hidden sm:gap-12 lg:grid-cols-2 lg:gap-10 lg:overflow-visible xl:gap-16">
+        <div className="grid grid-cols-1 items-center gap-10 sm:gap-12 lg:grid-cols-2 lg:gap-10 xl:gap-16">
           <motion.div
+            className="relative z-10 lg:z-auto"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.7, ease: "easeOut" }}
@@ -195,7 +196,7 @@ export function Hero() {
               blurAmount={4}
               animationDuration={0.45}
               pauseBetweenAnimations={1.2}
-              className="mt-8 max-w-lg justify-start gap-3"
+              className="relative z-10 mt-8 max-w-lg justify-start gap-3 lg:z-auto"
               wordClassName="text-sm font-normal text-muted/80 sm:text-base"
             />
 
@@ -261,11 +262,14 @@ export function Hero() {
 
         <div
           ref={ref}
-          className="grid grid-cols-1 gap-8  pt-15 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
+          className="grid grid-cols-2 justify-items-center gap-x-4 gap-y-8 pt-15 sm:justify-items-start sm:gap-8 lg:grid-cols-4 lg:gap-6"
         >
           {stats.map((stat) => (
-            <div key={stat.label} className="flex items-center gap-4">
-              <div className="text-4xl font-bold leading-none text-foreground sm:text-5xl">
+            <div
+              key={stat.label}
+              className="flex flex-col items-center gap-1.5 text-center sm:flex-row sm:items-center sm:gap-3 sm:text-left lg:gap-4"
+            >
+              <div className="text-3xl font-bold leading-none text-foreground sm:text-4xl lg:text-5xl">
                 {inView ? (
                   <CountUp
                     end={stat.value}
@@ -276,7 +280,7 @@ export function Hero() {
                   "0"
                 )}
               </div>
-              <p className="max-w-36 whitespace-pre-line text-sm leading-snug text-muted">
+              <p className="max-w-28 whitespace-pre-line text-xs leading-snug text-muted sm:max-w-36 sm:text-sm">
                 {stat.label}
               </p>
             </div>

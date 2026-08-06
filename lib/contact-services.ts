@@ -4,4 +4,6 @@ export const contactServices = [
   "UI Component Library",
   "Consulting / Code Review",
   "Other",
-];
+] as const;
+
+export type ContactService = (typeof contactServices)[number];

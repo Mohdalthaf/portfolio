@@ -160,7 +160,7 @@ function ProjectPreviewCard({ project }: { project: (typeof projects)[number] })
       {...projectCardGlowProps}
       className="h-full w-full overflow-hidden"
     >
-      <div className="relative h-full min-h-[360px] lg:min-h-[400px]">
+      <div className="relative h-full min-h-[220px] sm:min-h-[280px] lg:min-h-[360px]">
         <ProjectPreviewCarousel
           previews={project.previews}
           title={project.title}
@@ -176,7 +176,29 @@ function ProjectPreviewCard({ project }: { project: (typeof projects)[number] })
 
 export function Work() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [swapMetrics, setSwapMetrics] = useState({
+    cardDistance: 32,
+    verticalDistance: 38,
+  });
   const activeProject = projects[activeIndex] ?? projects[0];
+
+  useEffect(() => {
+    const updateMetrics = () => {
+      const width = window.innerWidth;
+
+      if (width < 640) {
+        setSwapMetrics({ cardDistance: 28, verticalDistance: 34 });
+      } else if (width < 1024) {
+        setSwapMetrics({ cardDistance: 36, verticalDistance: 42 });
+      } else {
+        setSwapMetrics({ cardDistance: 44, verticalDistance: 52 });
+      }
+    };
+
+    updateMetrics();
+    window.addEventListener("resize", updateMetrics);
+    return () => window.removeEventListener("resize", updateMetrics);
+  }, []);
 
   const cardSwapItems = useMemo(
     () =>
@@ -192,14 +214,14 @@ export function Work() {
   );
 
   return (
-    <section className="pt-20 pb-12 lg:pt-28 lg:pb-16">
+    <section className="pt-20 pb-12 lg:pt-20 lg:pb-16">
       <div className="mx-auto w-full max-w-6xl px-6">
         <SectionHeading
-          title="Selected projects"
+          title="Projects"
           description="A few builds worth walking through — production systems and side projects alike."
         />
 
-        <div className="mt-14 grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14 xl:grid-cols-[minmax(0,460px)_1fr]">
+        <div className="mt-14 grid grid-cols-1 items-center gap-28 sm:gap-24 lg:grid-cols-[minmax(0,420px)_1fr] lg:gap-14 xl:grid-cols-[minmax(0,460px)_1fr]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeProject.id}
@@ -212,13 +234,13 @@ export function Work() {
             </motion.div>
           </AnimatePresence>
 
-          <div className="relative mx-auto h-[400px] w-full max-w-2xl sm:h-[430px] lg:mx-0 lg:h-[460px] lg:max-w-none">
+          <div className="relative mx-auto h-[280px] w-full max-w-[260px] sm:h-[340px] sm:max-w-[320px] md:h-[400px] md:max-w-[380px] lg:mx-0 lg:h-[460px] lg:max-w-none">
             <CardSwap
-              className="relative inset-0 mx-auto translate-x-0 translate-y-0 origin-center max-sm:scale-[0.9]"
+              centered
               width="100%"
               height="100%"
-              cardDistance={44}
-              verticalDistance={52}
+              cardDistance={swapMetrics.cardDistance}
+              verticalDistance={swapMetrics.verticalDistance}
               delay={5000}
               pauseOnHover
               skewAmount={5}

@@ -145,7 +145,7 @@ export const socials = [
 
 export const nav = [
   { label: "Home", href: "#home" },
-  { label: "Resume", href: "#resume" },
+  { label: "About", href: "#resume" },
   { label: "Work", href: "#work" },
   { label: "Tech Stack", href: "#tech-stack" },
   { label: "Contact", href: "#contact" },

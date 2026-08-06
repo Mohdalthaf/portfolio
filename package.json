@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@hookform/resolvers": "^5.7.1",
     "@radix-ui/react-dialog": "^1.1.20",
     "@radix-ui/react-label": "^2.1.12",
     "@radix-ui/react-scroll-area": "^1.2.15",
@@ -31,9 +32,12 @@
     "react": "19.2.4",
     "react-countup": "^6.5.3",
     "react-dom": "19.2.4",
+    "react-hook-form": "^7.84.0",
     "react-intersection-observer": "^10.1.0",
+    "sonner": "^2.0.7",
     "swiper": "^14.0.6",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.6.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

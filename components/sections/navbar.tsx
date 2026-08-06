@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import { Menu } from "lucide-react";
 import { nav, profile } from "@/lib/data";
 import { useSectionNav } from "@/components/section-nav";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
@@ -87,20 +86,6 @@ export function Navbar() {
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <Button asChild size="sm">
-            <a
-              href="#contact"
-              onClick={(e) => {
-                e.preventDefault();
-                navigate("#contact");
-              }}
-            >
-              Hire me
-            </a>
-          </Button>
-        </div>
-
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild>
             <button
@@ -131,17 +116,6 @@ export function Navbar() {
                   {item.label}
                 </a>
               ))}
-              <Button asChild className="mt-4 w-fit">
-                <a
-                  href="#contact"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    navigate("#contact");
-                  }}
-                >
-                  Hire me
-                </a>
-              </Button>
             </nav>
           </SheetContent>
         </Sheet>
