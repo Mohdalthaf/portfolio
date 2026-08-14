@@ -10,7 +10,8 @@ export const profile = {
   github: "https://github.com/mohdalthaf",
   summary:
     "Front-end engineer building scalable web applications — from pixel-accurate, accessible interfaces to the REST APIs and auth flows behind them. I work mainly in React and Next.js, but I'm just as comfortable in PHP and Spring Boot when a feature needs a backend.",
-  heroTagline: "Frontend-focused Full Stack Developer from India.",
+  heroTagline:
+    "Frontend-focused Full Stack Developer from India. Building fast, accessible interfaces one commit at a time.",
   heroDescription:
     "I enjoy crafting digital experiences that feel effortless, purposeful, and enjoyable. If they make someone's day a little better, I've done my job.",
   heroQuote: {
@@ -82,25 +83,6 @@ export const education = [
   },
 ];
 
-export const skillGroups = [
-  {
-    label: "Frontend",
-    skills: ["HTML5", "CSS3", "JavaScript", "TypeScript", "React.js", "Next.js", "Tailwind CSS"],
-  },
-  {
-    label: "Backend & APIs",
-    skills: ["Node.js", "Spring Boot", "Java", "MySQL", "REST API", "GraphQL"],
-  },
-  {
-    label: "DevOps & Tools",
-    skills: ["Git / GitHub", "Docker", "AWS", "Postman", "Vercel", "Netlify"],
-  },
-  {
-    label: "Practices",
-    skills: ["Responsive Design", "WCAG / Lighthouse", "Framer Motion", "Storybook"],
-  },
-];
-
 export const projects = [
   {
     id: "01",
@@ -111,7 +93,7 @@ export const projects = [
       "A complete UI/UX overhaul for Veeble's website. The project focused on modernizing the design, improving Core Web Vitals, and enhancing interactivity to deliver a superior user experience.",
     stack: ["JavaScript", "HTML", "CSS", "Tailwind CSS", "REST APIs", "Lighthouse"],
     links: { github: "https://github.com/mohdalthaf", live: "https://www.veeble.com/in/" },
-    previews: ["/assets/work/veeble-thumb.png", "/assets/work/veeble-thumb2.png", "/assets/work/veeble-thumb3.png"],
+    previews: ["/assets/work/veeble-thumb.png"],
   },
   {
     id: "02",
@@ -122,7 +104,7 @@ export const projects = [
       "A cross-platform real estate application with secure authentication, property listings, and responsive UI. Integrated Clerk for auth and Supabase for backend data, with production builds shipped via Expo EAS.",
     stack: ["React Native", "Expo", "Clerk", "Supabase", "Tailwind CSS"],
     links: { github: "https://github.com/mohdalthaf", live: "https://github.com/mohdalthaf" },
-    previews: ["/assets/work/nestora-thumb.png","/assets/work/nestora-thumb2.png"],
+    previews: ["/assets/work/nestora-thumb.png"],
   },
   {
     id: "03",
@@ -133,7 +115,7 @@ export const projects = [
       "An interactive cocktail brand landing page with GSAP scroll animations, parallax effects, and video scrolling — built mobile-first with reusable React components.",
     stack: ["React", "Vite", "GSAP", "Tailwind CSS", "JavaScript (ES6+)"],
     links: { github: "https://github.com/mohdalthaf", live: null },
-    previews: ["/assets/work/velvet-thumb.png","/assets/work/velvet-thumb1.png"],
+    previews: ["/assets/work/velvet-thumb.png"],
   },
 ];
 
@@ -148,5 +130,22 @@ export const nav = [
   { label: "About", href: "#resume" },
   { label: "Work", href: "#work" },
   { label: "Tech Stack", href: "#tech-stack" },
-  { label: "Contact", href: "#contact" },
 ];
+
+export const heroCopy = {
+  eyebrow: `Hey, I'm ${profile.name}`,
+  lineOne: "Full Stack",
+  lineTwo: "Developer",
+  statement: "Code should feel invisible.\nThe experience should speak.",
+  description:
+    "I build high-performance digital experiences where engineering meets modern visual design.",
+};
+
+export const workCopy = {
+  eyebrow: "Behind the Builds",
+  headline: "Shaping Experiences That Make Life Simpler",
+  description:
+    "I'm a frontend-focused full stack developer building clean, intuitive interfaces that solve real-world problems.",
+  ctaSupport: "Let's Build Something Meaningful Together",
+  ctaLabel: "Get in touch",
+};

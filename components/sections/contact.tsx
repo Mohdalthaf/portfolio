@@ -134,8 +134,8 @@ export function Contact() {
   }
 
   return (
-    <section className="py-10">
-      <div className="mx-auto max-w-6xl px-6">
+    <section className="border-t border-white/5 py-28 lg:py-36">
+      <div className="mx-auto max-w-6xl px-6 md:px-10">
         <SectionHeading
           title="Let's work together"
           description="Have a project in mind or an open role? Send the brief — I reply within a day."
@@ -148,7 +148,7 @@ export function Contact() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="rounded-xl border border-border bg-surface p-6 sm:p-8"
+            className="rounded-xl border border-white/10 bg-black/35 p-6 backdrop-blur-md sm:p-8"
             noValidate
           >
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -367,8 +367,8 @@ function ContactRow({
   href?: string;
 }) {
   const content = (
-    <div className="flex items-center gap-4 rounded-lg border border-border bg-surface p-5 transition-colors hover:border-accent">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-accent">
+    <div className="flex items-center gap-4 rounded-lg border border-white/10 bg-black/35 p-5 backdrop-blur-md transition-colors hover:border-accent">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/5 text-accent">
         <Icon className="h-4 w-4" />
       </div>
       <div>

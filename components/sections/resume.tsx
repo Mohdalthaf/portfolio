@@ -1,9 +1,17 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { experience, education, profile } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { useRef, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+} from "framer-motion";
+import { Download } from "lucide-react";
+import SpecularButton from "@/components/SpecularButton";
+import TrueFocus from "@/components/TrueFocus";
+import { ExperienceTimeline } from "@/components/sections/experience-timeline";
+import EducationStatisticsCard from "@/components/shadcn-space/card/card-06";
+import { experience, profile } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -11,162 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import BorderGlow from "@/components/BorderGlow";
 
 type ExperienceItem = (typeof experience)[number];
-
-type TabId = "experience" | "education" | "about";
-
-const tabs: {
-  id: TabId;
-  label: string;
-  title: string;
-  description: string;
-}[] = [
-  {
-    id: "experience",
-    label: "Experience",
-    title: "My experience",
-    description:
-      "Roles where I've shipped features, integrated APIs, and maintained production-ready code.",
-  },
-  {
-    id: "education",
-    label: "Education",
-    title: "My education",
-    description:
-      "Academic background that built my foundation in software development and computer applications.",
-  },
-  {
-    id: "about",
-    label: "About me",
-    title: "About me",
-    description:
-      "A quick snapshot of who I am, what I care about, and how I approach building products.",
-  },
-];
-
-const leftPanelVariants = {
-  hidden: { x: -40, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.55, ease: "easeOut" as const },
-  },
-};
-
-const rightPanelVariants = {
-  hidden: { x: 40, opacity: 0 },
-  visible: {
-    x: 0,
-    opacity: 1,
-    transition: { duration: 0.55, ease: "easeOut" as const, delay: 0.08 },
-  },
-};
-
-const gridVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.12, delayChildren: 0.05 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" as const },
-  },
-};
-
-const tabContentVariants = {
-  initial: { opacity: 0, x: 24 },
-  animate: {
-    opacity: 1,
-    x: 0,
-    transition: { duration: 0.35, ease: "easeOut" as const },
-  },
-  exit: {
-    opacity: 0,
-    x: -24,
-    transition: { duration: 0.25, ease: "easeIn" as const },
-  },
-};
-
-const borderGlowProps = {
-  edgeSensitivity: 30,
-  glowColor: "40 80 80",
-  backgroundColor: "#24242D",
-  borderRadius: 12,
-  glowRadius: 40,
-  glowIntensity: 1,
-  coneSpread: 25,
-  animated: false,
-  colors: ["#c084fc", "#f472b6", "#38bdf8"],
-};
-
-function TabButton({
-  label,
-  isActive,
-  onClick,
-}: {
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      className={`w-full rounded-[10px] px-6 py-4 text-left text-base font-medium transition-colors duration-200 ${
-        isActive
-          ? "bg-[#00F5A0] text-[#111111]"
-          : "bg-[#25252E] text-foreground hover:bg-[#2f2f38]"
-      }`}
-    >
-      {label}
-    </motion.button>
-  );
-}
-
-function DetailCard({
-  children,
-  className = "",
-  onClick,
-}: {
-  children: ReactNode;
-  className?: string;
-  onClick?: () => void;
-}) {
-  const glowCard = (
-    <BorderGlow {...borderGlowProps} className="h-full w-full">
-      <div className="p-6">{children}</div>
-    </BorderGlow>
-  );
-
-  if (onClick) {
-    return (
-      <motion.button
-        type="button"
-        onClick={onClick}
-        variants={cardVariants}
-        className={cn("w-full cursor-pointer text-left", className)}
-      >
-        {glowCard}
-      </motion.button>
-    );
-  }
-
-  return (
-    <motion.div variants={cardVariants} className={cn("h-full w-full", className)}>
-      {glowCard}
-    </motion.div>
-  );
-}
 
 function ExperienceModal({
   job,
@@ -177,15 +31,15 @@ function ExperienceModal({
 }) {
   return (
     <Dialog open={job !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-h-[85vh] overflow-y-auto border-white/10 bg-black/90 backdrop-blur-xl">
         {job && (
           <>
             <DialogHeader>
-              <p className="text-sm font-medium text-[#00F5A0]">{job.period}</p>
-              <DialogTitle className="mt-3">{job.role}</DialogTitle>
-              <DialogDescription className="mt-2 flex items-center justify-between gap-3">
+              <p className="text-sm font-medium text-accent">{job.period}</p>
+              <DialogTitle className="mt-3 text-white">{job.role}</DialogTitle>
+              <DialogDescription className="mt-2 flex items-center justify-between gap-3 text-white/60">
                 <span className="flex min-w-0 items-center gap-2">
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00F5A0]" />
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                   {job.company}
                 </span>
                 {job.logo && (
@@ -199,17 +53,17 @@ function ExperienceModal({
               </DialogDescription>
             </DialogHeader>
 
-            <div className="mt-6 border-t border-border/60 pt-6">
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-[#00F5A0]">
+            <div className="mt-6 border-t border-white/10 pt-6">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-accent">
                 Key responsibilities
               </p>
               <ul className="mt-4 space-y-3">
                 {job.points.map((point) => (
                   <li
                     key={point}
-                    className="flex gap-3 text-sm leading-relaxed text-muted"
+                    className="flex gap-3 text-sm leading-relaxed text-white/65"
                   >
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#00F5A0]" />
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
                     {point}
                   </li>
                 ))}
@@ -222,201 +76,192 @@ function ExperienceModal({
   );
 }
 
-function ExperiencePanel({
-  onSelectJob,
-}: {
-  onSelectJob: (job: ExperienceItem) => void;
-}) {
-  return (
-    <motion.div
-      variants={gridVariants}
-      initial="hidden"
-      animate="visible"
-      className="grid grid-cols-1 gap-6 md:grid-cols-2"
-    >
-      {experience.map((job) => (
-        <DetailCard
-          key={`${job.company}-${job.period}`}
-          onClick={() => onSelectJob(job)}
-        >
-          <p className="text-sm font-medium text-[#00F5A0]">{job.period}</p>
-          <h3 className="mt-3 text-lg font-bold text-foreground">{job.role}</h3>
-          <p className="mt-2 flex items-center justify-between gap-3">
-            <span className="flex min-w-0 items-center gap-2 text-sm text-muted">
-              <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00F5A0]" />
-              {job.company}
-            </span>
-            {job.logo && (
-              /* eslint-disable-next-line @next/next/no-img-element */
-              <img
-                src={job.logo}
-                alt={`${job.company} logo`}
-                className="h-6 w-auto shrink-0 rounded-md bg-white px-2 py-1 object-contain"
-              />
-            )}
-          </p>
-          <p className="mt-4 text-xs text-muted/70">Click to view details</p>
-        </DetailCard>
-      ))}
-    </motion.div>
-  );
-}
-
-function EducationPanel() {
-  return (
-    <motion.div
-      variants={gridVariants}
-      initial="hidden"
-      animate="visible"
-      className="grid grid-cols-1 gap-6 md:grid-cols-2"
-    >
-      {education.map((edu) => (
-        <DetailCard key={edu.degree}>
-          <p className="text-sm font-medium text-[#00F5A0]">{edu.period}</p>
-          <h3 className="mt-3 text-lg font-bold text-foreground">{edu.degree}</h3>
-          <p className="mt-2 flex items-center gap-2 text-sm text-muted">
-            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-[#00F5A0]" />
-            {edu.school}
-          </p>
-          <p className="mt-1 text-sm text-muted">{edu.location}</p>
-          <p className="mt-2 text-xs text-muted/80">{edu.detail}</p>
-        </DetailCard>
-      ))}
-    </motion.div>
-  );
-}
-
-function AboutPanel() {
-  return (
-    <motion.div
-      variants={gridVariants}
-      initial="hidden"
-      animate="visible"
-      className="grid grid-cols-1 gap-6 md:grid-cols-2"
-    >
-      <DetailCard className="md:col-span-2">
-        <div className="flex flex-wrap items-center gap-3">
-          <p className="text-sm font-medium text-[#00F5A0]">{profile.title}</p>
-          {profile.availableForWork && (
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#00F5A0]/35 bg-[#00F5A0]/10 px-3 py-1 text-xs font-medium text-[#00F5A0]">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#00F5A0] opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[#00F5A0]" />
-              </span>
-              Open to work
-            </span>
-          )}
-        </div>
-        <h3 className="mt-3 text-lg font-bold text-foreground">{profile.name}</h3>
-        <p className="mt-4 text-sm leading-relaxed text-muted">{profile.summary}</p>
-        <p className="mt-4 text-sm text-muted">{profile.location}</p>
-      </DetailCard>
-
-      <DetailCard>
-        <p className="text-sm font-medium text-[#00F5A0]">Email</p>
-        <p className="mt-3 text-sm text-foreground">{profile.email}</p>
-      </DetailCard>
-
-      <DetailCard>
-        <p className="text-sm font-medium text-[#00F5A0]">Phone</p>
-        <p className="mt-3 text-sm text-foreground">{profile.phone}</p>
-      </DetailCard>
-    </motion.div>
-  );
-}
-
-function TabPanel({
-  activeTab,
-  onSelectJob,
-}: {
-  activeTab: TabId;
-  onSelectJob: (job: ExperienceItem) => void;
-}) {
-  switch (activeTab) {
-    case "experience":
-      return <ExperiencePanel onSelectJob={onSelectJob} />;
-    case "education":
-      return <EducationPanel />;
-    case "about":
-      return <AboutPanel />;
-  }
-}
-
 export function Resume() {
-  const [activeTab, setActiveTab] = useState<TabId>("experience");
+  const sectionRef = useRef<HTMLElement>(null);
   const [selectedJob, setSelectedJob] = useState<ExperienceItem | null>(null);
-  const activeContent = tabs.find((tab) => tab.id === activeTab)!;
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Mirror cinematic intro: enter → settle → drift apart
+  const headingX = useTransform(
+    scrollYProgress,
+    [0.08, 0.22, 0.55, 0.85],
+    [-90, 0, 0, -70]
+  );
+  const headingY = useTransform(
+    scrollYProgress,
+    [0.08, 0.22, 0.7, 0.95],
+    [36, 0, 0, -20]
+  );
+  const headingOpacity = useTransform(
+    scrollYProgress,
+    [0.06, 0.18, 0.72, 0.95],
+    [0, 1, 1, 0.35]
+  );
+
+  const aboutLineY = useTransform(
+    scrollYProgress,
+    [0.1, 0.24, 0.6, 0.88],
+    [28, 0, 0, -12]
+  );
+  const meLineY = useTransform(
+    scrollYProgress,
+    [0.14, 0.28, 0.6, 0.88],
+    [40, 0, 0, -8]
+  );
+
+  const copyX = useTransform(
+    scrollYProgress,
+    [0.1, 0.26, 0.58, 0.88],
+    [90, 0, 0, 70]
+  );
+  const copyOpacity = useTransform(
+    scrollYProgress,
+    [0.08, 0.22, 0.7, 0.95],
+    [0, 1, 1, 0.4]
+  );
+
+  const experienceOpacity = useTransform(
+    scrollYProgress,
+    [0.28, 0.4, 0.82, 0.98],
+    [0, 1, 1, 0.45]
+  );
+  const experienceY = useTransform(
+    scrollYProgress,
+    [0.28, 0.42, 0.85, 1],
+    [48, 0, 0, 24]
+  );
+
+  const educationOpacity = useTransform(
+    scrollYProgress,
+    [0.48, 0.58, 0.88, 1],
+    [0, 1, 1, 0.5]
+  );
+  const educationY = useTransform(
+    scrollYProgress,
+    [0.48, 0.6, 0.9, 1],
+    [40, 0, 0, 16]
+  );
 
   return (
-    <section className="flex min-h-screen flex-col justify-center py-20 lg:py-28">
-      <ExperienceModal
-        job={selectedJob}
-        onClose={() => setSelectedJob(null)}
-      />
-      <div className="mx-auto w-full max-w-6xl px-6">
-        <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[300px_1fr] lg:gap-16">
-          {/* Left panel */}
-          <motion.aside
-            variants={leftPanelVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="w-full max-w-[300px] lg:w-[300px]"
+    <section
+      ref={sectionRef}
+      className="relative overflow-hidden pt-28 pb-28 lg:pt-36 lg:pb-40"
+    >
+      <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10">
+        {/* Top editorial band — scroll-driven like cinematic intro */}
+        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+          <motion.div
+            style={{ x: headingX, y: headingY, opacity: headingOpacity }}
+            className="will-change-transform"
           >
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-              Why hire me?
+            <p className="text-sm text-white/70 md:text-base">
+              A little more about me
+            </p>
+            <h2 className="mt-4 text-[clamp(3rem,8vw,6.5rem)] font-extrabold leading-[0.88] tracking-[-0.045em] text-white">
+              <motion.span className="block" style={{ y: aboutLineY }}>
+                About
+              </motion.span>
+              <motion.span
+                className="block text-white/45"
+                style={{ y: meLineY }}
+              >
+                Me
+              </motion.span>
             </h2>
-            <p className="mt-4 text-sm leading-relaxed text-muted">
-              I build polished, performant interfaces and integrate them with
-              real backends — shipping features that hold up in production.
+          </motion.div>
+
+          <motion.div
+            style={{ x: copyX, opacity: copyOpacity }}
+            className="max-w-md will-change-transform lg:justify-self-end"
+          >
+            <TrueFocus
+              segments={["“Less,", "but better.”"]}
+              borderColor="#ff2d55"
+              glowColor="rgba(255, 45, 85, 0.55)"
+              blurAmount={4}
+              animationDuration={0.45}
+              pauseBetweenAnimations={1.2}
+              className="justify-start gap-x-2"
+              wordClassName="text-[clamp(1.25rem,2.2vw,1.75rem)] font-semibold leading-[1.25] tracking-tight text-white"
+            />
+            <p className="mt-3 text-sm text-white/45">
+              — {profile.heroQuote.author}
+            </p>
+            <p className="mt-8 text-sm leading-relaxed text-white/60 md:text-[15px]">
+              {profile.summary}
             </p>
 
-            <nav className="mt-10 flex flex-col gap-3" aria-label="Resume sections">
-              {tabs.map((tab) => (
-                <TabButton
-                  key={tab.id}
-                  label={tab.label}
-                  isActive={activeTab === tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                />
-              ))}
-            </nav>
-          </motion.aside>
+            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 text-sm">
+              <p>
+                <span className="text-white/35">Based in</span>{" "}
+                <span className="text-white">{profile.location}</span>
+              </p>
+              <p>
+                <span className="text-white/35">Focus</span>{" "}
+                <span className="text-white">{profile.title}</span>
+              </p>
+            </div>
 
-          {/* Right panel */}
-          <motion.div
-            variants={rightPanelVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="min-w-0"
-          >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeTab}
-                variants={tabContentVariants}
-                initial="initial"
-                animate="animate"
-                exit="exit"
+            <div className="mt-8">
+              <SpecularButton
+                size="lg"
+                radius={999}
+                tint="#ff2d55"
+                tintOpacity={0}
+                blur={0}
+                textColor="#ff2d55"
+                lineColor="#ff2d55"
+                baseColor="#3a3a3a"
+                intensity={1}
+                shineSize={10}
+                shineFade={40}
+                thickness={1}
+                speed={0.35}
+                followMouse
+                proximity={250}
+                autoAnimate={false}
+                className="px-7! py-3! text-xs! font-semibold uppercase tracking-[0.18em]"
+                onClick={() => {
+                  const link = document.createElement("a");
+                  link.href = profile.resumeUrl;
+                  link.download = "";
+                  link.click();
+                }}
               >
-                <h3 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  {activeContent.title}
-                </h3>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted">
-                  {activeContent.description}
-                </p>
-
-                <div className="mt-10">
-                  <TabPanel
-                    activeTab={activeTab}
-                    onSelectJob={setSelectedJob}
-                  />
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                <span className="inline-flex items-center gap-2">
+                  Download CV
+                  <Download className="h-4 w-4" />
+                </span>
+              </SpecularButton>
+            </div>
           </motion.div>
         </div>
+
+        {/* Experience — cinematic vertical timeline */}
+        <motion.div
+          className="mt-24 will-change-transform lg:mt-32"
+          style={{ opacity: experienceOpacity, y: experienceY }}
+        >
+          <ExperienceTimeline onSelect={setSelectedJob} />
+        </motion.div>
+
+        {/* Education */}
+        <motion.div
+          className="mt-20 will-change-transform lg:mt-28"
+          style={{ opacity: educationOpacity, y: educationY }}
+        >
+          <h3 className="mb-8 text-sm uppercase tracking-[0.28em] text-white/40">
+            Education
+          </h3>
+          <EducationStatisticsCard />
+        </motion.div>
       </div>
+
+      <ExperienceModal job={selectedJob} onClose={() => setSelectedJob(null)} />
     </section>
   );
 }

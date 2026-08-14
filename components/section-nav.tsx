@@ -34,6 +34,18 @@ function idToLabel(id: string) {
   return nav.find((item) => item.href === `#${id}`)?.label ?? nav[0].label;
 }
 
+/** Hash-only URL update that won't trigger Next's App Router restore action. */
+function setSectionHash(id: string) {
+  const next = `#${id}`;
+  if (window.location.hash === next) return;
+
+  const url = `${window.location.pathname}${window.location.search}${next}`;
+  // Passing Next's history state (with `__NA`) makes the patched pushState
+  // skip `dispatchAppRouterAction`, which throws before router init / during HMR.
+  const state = window.history.state ?? { __NA: true };
+  window.history.pushState(state, "", url);
+}
+
 export function SectionNavProvider({ children }: { children: ReactNode }) {
   const [activeId, setActiveId] = useState("home");
   const active = idToLabel(activeId);
@@ -49,9 +61,7 @@ export function SectionNavProvider({ children }: { children: ReactNode }) {
     if (!el) return;
 
     el.scrollIntoView({ behavior: "smooth", block: "start" });
-    if (window.location.hash !== `#${id}`) {
-      window.history.pushState(null, "", `#${id}`);
-    }
+    setSectionHash(id);
     setActiveId(id);
   }, []);
 

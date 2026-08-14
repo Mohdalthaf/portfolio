@@ -1,6 +1,7 @@
 "use client";
 
-import MagicBento, { type BentoCardProps } from "@/components/MagicBento";
+import dynamic from "next/dynamic";
+import type { BentoCardProps } from "@/components/MagicBento";
 import { Marquee } from "@/components/shadcn-space/animations/marquee";
 import { SkillIcon } from "@/components/skill-icon";
 import {
@@ -9,7 +10,17 @@ import {
 } from "@/lib/assets";
 import { SectionHeading } from "./section-heading";
 
-const CARD_COLOR = "#24242D";
+const MagicBento = dynamic(() => import("@/components/MagicBento"), {
+  ssr: false,
+  loading: () => (
+    <div
+      aria-hidden
+      className="min-h-[320px] w-full rounded-[20px] border border-white/10 bg-black/30"
+    />
+  ),
+});
+
+const CARD_COLOR = "rgba(10, 10, 14, 0.55)";
 
 function BentoSkillGrid({ skills }: { skills: readonly string[] }) {
   return (
@@ -43,11 +54,11 @@ function MarqueeStrip() {
     <div className="relative mt-16 overflow-hidden border-y border-white/6 py-5">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-background to-transparent lg:w-24"
+        className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-black/80 to-transparent lg:w-24"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-background to-transparent lg:w-24"
+        className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-black/80 to-transparent lg:w-24"
       />
 
       <Marquee className="[--duration:36s] p-0 [--gap:2.5rem]" pauseOnHover>
@@ -67,11 +78,11 @@ function MarqueeStrip() {
 
 export function TechStack() {
   return (
-    <section className="relative overflow-hidden pt-20 pb-20 lg:pt-38 lg:pb-28">
-      <div className="relative mx-auto w-full max-w-6xl px-6">
+    <section className="relative overflow-hidden border-t border-white/5 pt-28 pb-24 lg:pt-36 lg:pb-32">
+      <div className="relative mx-auto w-full max-w-6xl px-6 md:px-10">
         <SectionHeading
           className="max-w-2xl"
-          title="Tech stack"
+          title="Tools of the craft"
           description="The languages, frameworks, and tools I reach for when building products that need to look sharp and hold up in production."
         />
 
@@ -89,7 +100,7 @@ export function TechStack() {
             clickEffect
             spotlightRadius={400}
             particleCount={12}
-            glowColor="0, 255, 153"
+            glowColor="255, 45, 85"
             disableAnimations={false}
           />
         </div>

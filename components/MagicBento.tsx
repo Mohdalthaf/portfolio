@@ -33,7 +33,7 @@ export interface BentoProps {
 
 const DEFAULT_PARTICLE_COUNT = 12;
 const DEFAULT_SPOTLIGHT_RADIUS = 300;
-const DEFAULT_GLOW_COLOR = '0, 255, 153';
+const DEFAULT_GLOW_COLOR = '255, 45, 85';
 const MOBILE_BREAKPOINT = 768;
 
 const cardData: BentoCardProps[] = [
@@ -583,9 +583,9 @@ const MagicBento: React.FC<BentoProps> = ({
             --border-color: #2F293A;
             --background-dark: #120F17;
             --white: hsl(0, 0%, 100%);
-            --accent-primary: rgba(0, 255, 153, 1);
-            --accent-glow: rgba(0, 255, 153, 0.2);
-            --accent-border: rgba(0, 255, 153, 0.8);
+            --accent-primary: rgba(255, 45, 85, 1);
+            --accent-glow: rgba(255, 45, 85, 0.2);
+            --accent-border: rgba(255, 45, 85, 0.8);
           }
           
           .card-responsive {
@@ -677,7 +677,7 @@ const MagicBento: React.FC<BentoProps> = ({
           }
           
           .card--border-glow:hover {
-            box-shadow: 0 4px 20px rgba(0, 255, 153, 0.12), 0 0 30px rgba(${glowColor}, 0.2);
+            box-shadow: 0 4px 20px rgba(255, 45, 85, 0.12), 0 0 30px rgba(${glowColor}, 0.2);
           }
           
           .particle::before {
@@ -693,7 +693,7 @@ const MagicBento: React.FC<BentoProps> = ({
           }
           
           .particle-container:hover {
-            box-shadow: 0 4px 20px rgba(0, 255, 153, 0.1), 0 0 30px rgba(${glowColor}, 0.2);
+            box-shadow: 0 4px 20px rgba(255, 45, 85, 0.1), 0 0 30px rgba(${glowColor}, 0.2);
           }
           
           .text-clamp-1 {

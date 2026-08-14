@@ -66,7 +66,6 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={`${jetbrainsMono.variable} antialiased`}>
-        <div className="noise-overlay" />
         {children}
       </body>
     </html>

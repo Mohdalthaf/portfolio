@@ -28,14 +28,14 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 body {
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--background);
+  background: #050505;
   color: var(--foreground);
   font-family: var(--font-jetbrains-mono), monospace;
 }
@@ -47,17 +47,7 @@ nextjs-portal {
 
 ::selection {
   background: var(--accent);
-  color: #04140c;
-}
-
-.noise-overlay {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color: #140408;
 }
 
 .text-balance {
@@ -112,7 +102,7 @@ nextjs-portal {
 .skills-grid-scroll {
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 255, 153, 0.35) transparent;
+  scrollbar-color: rgba(255, 45, 85, 0.35) transparent;
 }
 
 .skills-grid-scroll::-webkit-scrollbar {
@@ -124,12 +114,12 @@ nextjs-portal {
 }
 
 .skills-grid-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 153, 0.35);
+  background: rgba(255, 45, 85, 0.35);
   border-radius: 999px;
 }
 
 .skills-grid-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 153, 0.55);
+  background: rgba(255, 45, 85, 0.55);
 }
 
 .project-preview-carousel .swiper-pagination {

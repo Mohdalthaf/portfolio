@@ -91,21 +91,6 @@ export function getAllTechStackSkills() {
   );
 }
 
-export const heroSkills = [
-  { name: "HTML5", devicon: "devicon-html5-plain" },
-  { name: "CSS3", devicon: "devicon-css3-plain" },
-  { name: "JavaScript", devicon: "devicon-javascript-plain" },
-  { name: "React", devicon: "devicon-react-plain" },
-  { name: "Next.js", devicon: "devicon-nextjs-plain" },
-  { name: "Tailwind CSS", devicon: "devicon-tailwindcss-plain" },
-] as const;
-
-export const resumeTabIcons = {
-  experience: "/assets/resume/badge.svg",
-  education: "/assets/resume/cap.svg",
-  skills: "/assets/resume/icons/scroll.svg",
-} as const;
-
 export type SkillIcon =
   | { type: "devicon"; className: string }
   | { type: "svg"; src: string; alt: string };
@@ -190,11 +175,6 @@ const skillIconMap: Record<string, SkillIcon> = {
     src: "/assets/skills/claude.svg",
     alt: "Claude",
   },
-  Insomnia: {
-    type: "svg",
-    src: "/assets/skills/insomnia.svg",
-    alt: "Insomnia",
-  },
   Figma: { type: "devicon", className: "devicon-figma-plain colored" },
   Docker: { type: "devicon", className: "devicon-docker-plain colored" },
   PHP: { type: "devicon", className: "devicon-php-plain colored" },
@@ -205,19 +185,3 @@ const skillIconMap: Record<string, SkillIcon> = {
 export function getSkillIcon(skill: string): SkillIcon | undefined {
   return skillIconMap[skill];
 }
-
-/** @deprecated Use getSkillIcon instead */
-export function getSkillDevicon(skill: string) {
-  const icon = skillIconMap[skill];
-  if (!icon || icon.type !== "devicon") return undefined;
-  return icon.className.replace(" colored", "");
-}
-
-/** @deprecated Use getSkillIcon instead */
-export function getColoredSkillDevicon(skill: string) {
-  const icon = skillIconMap[skill];
-  if (!icon || icon.type !== "devicon") return undefined;
-  return icon.className;
-}
-
-export const profileImage = "/assets/profile2.png";
