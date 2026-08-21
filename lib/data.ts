@@ -97,6 +97,20 @@ export const projects = [
   },
   {
     id: "02",
+    title: "VoltReserve",
+    role: "Full Stack Developer",
+    period: "2025",
+    description:
+      "A full stack platform for finding and reserving EV charging stations. Built station discovery, booking, and availability flows with a React frontend, Node.js API, and MongoDB.",
+    stack: ["React", "Node.js", "Express.js", "MongoDB", "REST APIs", "Tailwind CSS"],
+    links: {
+      github: "https://github.com/orgs/VoltReserve/repositories",
+      live: "https://voltreserve-alpha.vercel.app/login",
+    },
+    previews: ["/assets/work/voltreserve-thumb.png"],
+  },
+  {
+    id: "03",
     title: "Nestora — Real Estate App",
     role: "Full Stack Developer",
     period: "Mar 2026 — Apr 2026",
@@ -107,7 +121,7 @@ export const projects = [
     previews: ["/assets/work/nestora-thumb.png"],
   },
   {
-    id: "03",
+    id: "04",
     title: "Velvet Pour",
     role: "Frontend Developer",
     period: "Dec 2024 — Jan 2025",

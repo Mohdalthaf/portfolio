@@ -13,7 +13,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Work() {
   const { navigateToSection } = useSectionNav();
-  const featured = projects.slice(0, 3);
+  const featured = projects;
 
   return (
     <section className="relative bg-transparent pt-28 pb-28 lg:pt-36 lg:pb-40">
@@ -75,11 +75,16 @@ export function Work() {
               >
                 <div className="relative aspect-3/4 w-full overflow-hidden bg-white/5">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-35"
-                  />
+                  {image ? (
+                    <img
+                      src={image}
+                      alt={project.title}
+                      className="h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-35"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
+                  ) : null}
 
                   {/* Bottom scrim keeps white labels readable on light images */}
                   <div
