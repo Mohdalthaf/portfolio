@@ -117,7 +117,7 @@ export const projects = [
     description:
       "An AI-powered admin dashboard for operations and insights. Built analytics views, intelligent admin workflows, and a responsive control panel for managing day-to-day system activity.",
     stack: ["React", "Node.js", "MongoDB", "REST APIs", "Tailwind CSS"],
-    links: { github: "https://github.com/mohdalthaf", live: null },
+    links: { github: "https://github.com/mohdalthaf", live: "https://voltreserve-alpha.vercel.app/admin-login"},
     previews: ["/assets/work/volty-thumb.png"],
   },
   {
