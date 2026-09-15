@@ -111,6 +111,17 @@ export const projects = [
   },
   {
     id: "03",
+    title: "Volty",
+    role: "Full Stack Developer",
+    period: "2025",
+    description:
+      "An AI-powered admin dashboard for operations and insights. Built analytics views, intelligent admin workflows, and a responsive control panel for managing day-to-day system activity.",
+    stack: ["React", "Node.js", "MongoDB", "REST APIs", "Tailwind CSS"],
+    links: { github: "https://github.com/mohdalthaf", live: null },
+    previews: ["/assets/work/volty-thumb.png"],
+  },
+  {
+    id: "04",
     title: "Nestora — Real Estate App",
     role: "Full Stack Developer",
     period: "Mar 2026 — Apr 2026",
@@ -121,7 +132,7 @@ export const projects = [
     previews: ["/assets/work/nestora-thumb.png"],
   },
   {
-    id: "04",
+    id: "05",
     title: "Velvet Pour",
     role: "Frontend Developer",
     period: "Dec 2024 — Jan 2025",
