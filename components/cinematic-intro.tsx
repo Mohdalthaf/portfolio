@@ -13,7 +13,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ChevronDown, Download, Github, Linkedin, Mail } from "lucide-react";
-import { heroCopy, profile, stats } from "@/lib/data";
+import { heroCopy, profile } from "@/lib/data";
 import { ScrollFrameCanvas } from "@/components/scroll-frame-canvas";
 import { ButtonShineHover } from "@/components/shadcn-space/button/button-03";
 
@@ -119,12 +119,6 @@ export function CinematicIntro({
     [0, 0.55, 0.78, 1],
     [1, 1, 0.35, 0]
   );
-  const statsOpacity = useTransform(
-    scrollYProgress,
-    [0, 0.5, 0.75, 0.95],
-    [1, 1, 0.25, 0]
-  );
-  const statsY = useTransform(scrollYProgress, [0.55, 0.95], [0, 40]);
 
   return (
     <section
@@ -216,24 +210,6 @@ export function CinematicIntro({
               </p>
             </motion.div>
           </div>
-
-          {/* Bottom — stats as category columns */}
-          <motion.div
-            className="relative z-10 mt-auto grid grid-cols-2 gap-6 pt-6 sm:grid-cols-4 sm:gap-4"
-            style={{ opacity: statsOpacity, y: statsY }}
-          >
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-                  {stat.value}
-                  <span className="text-accent">{stat.suffix}</span>
-                </p>
-                <p className="mt-1 whitespace-pre-line text-xs leading-snug text-white/50">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
 
         {/* Phase progress cue */}

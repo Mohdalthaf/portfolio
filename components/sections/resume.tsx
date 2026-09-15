@@ -11,7 +11,7 @@ import SpecularButton from "@/components/SpecularButton";
 import TrueFocus from "@/components/TrueFocus";
 import { ExperienceTimeline } from "@/components/sections/experience-timeline";
 import EducationStatisticsCard from "@/components/shadcn-space/card/card-06";
-import { experience, profile } from "@/lib/data";
+import { experience, profile, stats } from "@/lib/data";
 import {
   Dialog,
   DialogContent,
@@ -122,6 +122,17 @@ export function Resume() {
     scrollYProgress,
     [0.08, 0.22, 0.7, 0.95],
     [0, 1, 1, 0.4]
+  );
+
+  const statsOpacity = useTransform(
+    scrollYProgress,
+    [0.18, 0.3, 0.78, 0.95],
+    [0, 1, 1, 0.45]
+  );
+  const statsY = useTransform(
+    scrollYProgress,
+    [0.18, 0.32, 0.85, 1],
+    [32, 0, 0, 16]
   );
 
   const experienceOpacity = useTransform(
@@ -240,6 +251,24 @@ export function Resume() {
             </div>
           </motion.div>
         </div>
+
+        {/* Stats */}
+        <motion.div
+          className="mt-16 grid grid-cols-2 gap-6 border-t border-white/10 pt-10 will-change-transform sm:grid-cols-4 sm:gap-4 lg:mt-20"
+          style={{ opacity: statsOpacity, y: statsY }}
+        >
+          {stats.map((stat) => (
+            <div key={stat.label} className="text-center">
+              <p className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+                {stat.value}
+                <span className="text-accent">{stat.suffix}</span>
+              </p>
+              <p className="mt-1 whitespace-pre-line text-xs leading-snug text-white/50">
+                {stat.label}
+              </p>
+            </div>
+          ))}
+        </motion.div>
 
         {/* Experience — cinematic vertical timeline */}
         <motion.div
