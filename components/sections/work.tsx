@@ -192,40 +192,140 @@ export function Work() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollerRef = useRef<HTMLDivElement>(null);
+  const activeIndexRef = useRef(0);
+  const suppressClickRef = useRef(false);
+  const dragRef = useRef<{
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    axis: "x" | "y" | null;
+  } | null>(null);
+
+  useEffect(() => {
+    activeIndexRef.current = activeIndex;
+  }, [activeIndex]);
 
   useEffect(() => {
     const el = scrollerRef.current;
     if (!el) return;
 
-    const updateActive = () => {
-      // Only track slide index in the mobile slider layout
-      if (window.matchMedia("(min-width: 640px)").matches) return;
+    const mobile = () => !window.matchMedia("(min-width: 640px)").matches;
 
+    const nearestIndex = () => {
       const cards = Array.from(el.children) as HTMLElement[];
-      if (!cards.length) return;
-
+      if (!cards.length) return 0;
       const center = el.scrollLeft + el.clientWidth / 2;
-      let nearest = 0;
-      let nearestDist = Number.POSITIVE_INFINITY;
-
+      let best = 0;
+      let bestDist = Number.POSITIVE_INFINITY;
       cards.forEach((card, index) => {
-        const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-        const dist = Math.abs(cardCenter - center);
-        if (dist < nearestDist) {
-          nearestDist = dist;
-          nearest = index;
+        const mid = card.offsetLeft + card.offsetWidth / 2;
+        const dist = Math.abs(mid - center);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = index;
         }
       });
-
-      setActiveIndex(nearest);
+      return best;
     };
 
-    updateActive();
-    el.addEventListener("scroll", updateActive, { passive: true });
-    window.addEventListener("resize", updateActive);
+    const snapTo = (index: number) => {
+      const card = el.children[index] as HTMLElement | undefined;
+      if (!card) return;
+      const left = card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2;
+      el.scrollTo({ left, behavior: "smooth" });
+      setActiveIndex(index);
+      activeIndexRef.current = index;
+    };
+
+    const onScroll = () => {
+      if (!mobile()) return;
+      const next = nearestIndex();
+      setActiveIndex(next);
+      activeIndexRef.current = next;
+    };
+
+    const onPointerDown = (e: PointerEvent) => {
+      if (!mobile() || e.pointerType === "mouse") return;
+      dragRef.current = {
+        startX: e.clientX,
+        startY: e.clientY,
+        scrollLeft: el.scrollLeft,
+        axis: null,
+      };
+      suppressClickRef.current = false;
+      try {
+        el.setPointerCapture(e.pointerId);
+      } catch {
+        // ignore
+      }
+    };
+
+    const onPointerMove = (e: PointerEvent) => {
+      const drag = dragRef.current;
+      if (!drag || !mobile()) return;
+
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+
+      if (!drag.axis) {
+        if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+        drag.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+        if (drag.axis === "x") {
+          window.__lenis?.stop();
+          el.style.scrollSnapType = "none";
+          setOpenId(null);
+        }
+      }
+
+      if (drag.axis !== "x") return;
+
+      e.preventDefault();
+      suppressClickRef.current = Math.abs(dx) > 6;
+      el.scrollLeft = drag.scrollLeft - dx;
+    };
+
+    const onPointerUp = (e: PointerEvent) => {
+      const drag = dragRef.current;
+      dragRef.current = null;
+      if (!drag) return;
+
+      el.style.scrollSnapType = "";
+
+      if (drag.axis !== "x" || !mobile()) {
+        window.__lenis?.start();
+        return;
+      }
+
+      const dx = e.clientX - drag.startX;
+      const count = el.children.length;
+      let target = nearestIndex();
+
+      if (dx < -56) {
+        target = Math.min(count - 1, activeIndexRef.current + 1);
+      } else if (dx > 56) {
+        target = Math.max(0, activeIndexRef.current - 1);
+      }
+
+      snapTo(target);
+      window.__lenis?.start();
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    el.addEventListener("pointerdown", onPointerDown, { passive: true });
+    el.addEventListener("pointermove", onPointerMove, { passive: false });
+    el.addEventListener("pointerup", onPointerUp);
+    el.addEventListener("pointercancel", onPointerUp);
+    window.addEventListener("resize", onScroll);
+    onScroll();
+
     return () => {
-      el.removeEventListener("scroll", updateActive);
-      window.removeEventListener("resize", updateActive);
+      el.removeEventListener("scroll", onScroll);
+      el.removeEventListener("pointerdown", onPointerDown);
+      el.removeEventListener("pointermove", onPointerMove);
+      el.removeEventListener("pointerup", onPointerUp);
+      el.removeEventListener("pointercancel", onPointerUp);
+      window.removeEventListener("resize", onScroll);
+      window.__lenis?.start();
     };
   }, [featured.length]);
 
@@ -233,10 +333,10 @@ export function Work() {
     const el = scrollerRef.current;
     const card = el?.children[index] as HTMLElement | undefined;
     if (!el || !card) return;
-    el.scrollTo({
-      left: card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2,
-      behavior: "smooth",
-    });
+    const left = card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2;
+    el.scrollTo({ left, behavior: "smooth" });
+    setActiveIndex(index);
+    activeIndexRef.current = index;
   };
 
   return (
@@ -287,7 +387,8 @@ export function Work() {
         <div
           ref={scrollerRef}
           data-lenis-prevent
-          className="mt-16 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mt-16 sm:grid sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible lg:mt-20 lg:grid-cols-3 lg:gap-6 [&::-webkit-scrollbar]:hidden"
+          data-lenis-prevent-touch
+          className="mt-16 flex touch-pan-x snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain overscroll-y-none pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:mt-16 sm:grid sm:touch-auto sm:snap-none sm:grid-cols-2 sm:gap-5 sm:overflow-visible lg:mt-20 lg:grid-cols-3 lg:gap-6 [&::-webkit-scrollbar]:hidden"
         >
           {featured.map((project, index) => (
             <ProjectCard
@@ -295,11 +396,15 @@ export function Work() {
               project={project}
               index={index}
               isOpen={openId === project.id}
-              onToggle={() =>
+              onToggle={() => {
+                if (suppressClickRef.current) {
+                  suppressClickRef.current = false;
+                  return;
+                }
                 setOpenId((current) =>
                   current === project.id ? null : project.id
-                )
-              }
+                );
+              }}
               className="w-[min(82vw,22rem)] shrink-0 snap-center sm:w-auto sm:shrink"
             />
           ))}
