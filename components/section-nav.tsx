@@ -127,12 +127,13 @@ export function SectionNavProvider({ children }: { children: ReactNode }) {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
     };
 
+    // hashchange also fires for back/forward between section hashes, so it
+    // covers history navigation. popstate alone (e.g. closing the Sneak Peek
+    // overlay, which goes back from /work/[slug]) must not scroll the page.
     window.addEventListener("hashchange", syncFromHash);
-    window.addEventListener("popstate", syncFromHash);
 
     return () => {
       window.removeEventListener("hashchange", syncFromHash);
-      window.removeEventListener("popstate", syncFromHash);
     };
   }, [sectionIds]);
 

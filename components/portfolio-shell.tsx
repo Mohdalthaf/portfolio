@@ -9,6 +9,7 @@ import {
 import { Resume } from "@/components/sections/resume";
 import { TechStack } from "@/components/sections/tech-stack";
 import { Work } from "@/components/sections/work";
+import { RecentProjects } from "@/components/sections/recent-projects";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { SectionNavProvider } from "@/components/section-nav";
@@ -37,6 +38,7 @@ export function PortfolioShell() {
               <Resume />
             </div>
             <div id="work" className={sectionAnchorClassName}>
+              <RecentProjects />
               <Work />
             </div>
             <div id="tech-stack" className={sectionAnchorClassName}>

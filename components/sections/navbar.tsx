@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import { motion } from "framer-motion";
 import { Download, Github, Linkedin, Mail, Menu } from "lucide-react";
 import { nav, profile, socials } from "@/lib/data";
 import { useSectionNav } from "@/components/section-nav";
+import GooeyNav from "@/components/GooeyNav/GooeyNav";
 import { BrandLogo } from "@/components/brand-logo";
 import { ButtonWithIcon } from "@/components/shadcn-space/button/button-01";
 import { ButtonShineHover } from "@/components/shadcn-space/button/button-03";
@@ -21,42 +22,17 @@ const socialIcons = {
   Email: Mail,
 } as const;
 
-function NavLink({
-  href,
-  label,
-  active,
-  onNavigate,
-}: {
-  href: string;
-  label: string;
-  active: boolean;
-  onNavigate: (href: string) => void;
-}) {
-  return (
-    <a
-      href={href}
-      onClick={(e) => {
-        e.preventDefault();
-        onNavigate(href);
-      }}
-      className={`relative text-sm transition-colors ${
-        active ? "text-white" : "text-white/55 hover:text-white"
-      }`}
-    >
-      {label}
-      {active && (
-        <motion.span
-          layoutId="nav-underline"
-          className="absolute -bottom-1.5 left-0 h-px w-full bg-accent"
-        />
-      )}
-    </a>
-  );
-}
+// Label-only items render as <button>s, so GooeyNav never follows a hash
+// itself â€” scrolling is left to navigateToSection (Lenis-aware).
+const gooeyItems = nav.map((item) => ({ label: item.label }));
 
 export function Navbar() {
   const { active, navigateToSection } = useSectionNav();
   const [open, setOpen] = useState(false);
+  const activeIndex = Math.max(
+    0,
+    nav.findIndex((item) => item.label === active)
+  );
 
   function navigate(href: string) {
     navigateToSection(href);
@@ -83,17 +59,17 @@ export function Navbar() {
         </a>
 
         <div className="hidden items-center gap-10 md:flex">
-          <nav className="flex items-center gap-8">
-            {nav.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                label={item.label}
-                active={active === item.label}
-                onNavigate={navigateToSection}
-              />
-            ))}
-          </nav>
+          <GooeyNav
+            items={gooeyItems}
+            activeIndex={activeIndex}
+            onChange={(index) => navigateToSection(nav[index].href)}
+            color="#ff2d55"
+            activeTextColor="#ffffff"
+            colors={["#ff2d55", "#ff6b86", "#ffffff"]}
+            size="md"
+            // Match the 48px "Let's Talk" button: 6px frame + 9.5px pill padding + ~17px text
+            style={{ "--gn-y": "9.5px" } as CSSProperties}
+          />
 
           <ButtonWithIcon
             label="Let's Talk"

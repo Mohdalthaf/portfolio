@@ -63,7 +63,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  modal,
+}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   return (
     <html lang="en" className="dark">
       <head>
@@ -78,6 +79,7 @@ export default function RootLayout({
       </head>
       <body className={`${jetbrainsMono.variable} antialiased`}>
         {children}
+        {modal}
       </body>
     </html>
   );

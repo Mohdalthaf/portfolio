@@ -8,9 +8,6 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { cn } from "@/lib/utils";
-import { Download } from "lucide-react";
-import SpecularButton from "@/components/SpecularButton";
 import TrueFocus from "@/components/TrueFocus";
 import { ExperienceTimeline } from "@/components/sections/experience-timeline";
 import EducationStatisticsCard from "@/components/shadcn-space/card/card-06";
@@ -149,17 +146,6 @@ export function Resume() {
     [0, 1, 1, 0.4]
   );
 
-  const statsOpacity = useTransform(
-    scrollYProgress,
-    [0.18, 0.3, 0.78, 0.95],
-    [0, 1, 1, 0.45]
-  );
-  const statsY = useTransform(
-    scrollYProgress,
-    [0.18, 0.32, 0.85, 1],
-    [32, 0, 0, 16]
-  );
-
   const experienceOpacity = useTransform(
     scrollYProgress,
     [0.28, 0.4, 0.82, 0.98],
@@ -188,125 +174,70 @@ export function Resume() {
       className="relative overflow-hidden pt-28 pb-28 lg:pt-36 lg:pb-40"
     >
       <div className="relative mx-auto w-full max-w-7xl px-6 md:px-10">
-        {/* Top editorial band — scroll-driven like cinematic intro */}
-        <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+        {/* Top band — headline + intro on the left, 2×2 stats on the right */}
+        <div className="grid gap-16 lg:grid-cols-[1fr_1fr] lg:items-stretch lg:gap-20">
           <motion.div
             style={{ x: headingX, y: headingY, opacity: headingOpacity }}
-            className="will-change-transform"
+            className="flex flex-col justify-between gap-12 will-change-transform"
           >
-            <p className="text-sm text-white/70 md:text-base">
-              A little more about me
-            </p>
-            <h2 className="mt-4 text-[clamp(3rem,8vw,6.5rem)] font-extrabold leading-[0.88] tracking-[-0.045em] text-white">
-              <motion.span className="block" style={{ y: aboutLineY }}>
-                About
-              </motion.span>
-              <motion.span
-                className="block text-white/45"
-                style={{ y: meLineY }}
-              >
-                Me
-              </motion.span>
-            </h2>
+            <div>
+              <p className="text-sm text-white/70 md:text-base">
+                A little more about me
+              </p>
+              <h2 className="mt-4 text-[clamp(3rem,8vw,6.5rem)] font-extrabold leading-[0.88] tracking-[-0.045em] text-white">
+                <motion.span className="block" style={{ y: aboutLineY }}>
+                  About
+                </motion.span>
+                <motion.span
+                  className="block text-white/45"
+                  style={{ y: meLineY }}
+                >
+                  Me
+                </motion.span>
+              </h2>
+            </div>
+
+            <div className="max-w-md">
+              <TrueFocus
+                segments={["“Less,", "but better.”"]}
+                borderColor="#ff2d55"
+                glowColor="rgba(255, 45, 85, 0.55)"
+                blurAmount={4}
+                animationDuration={0.45}
+                pauseBetweenAnimations={1.2}
+                className="justify-start gap-x-2"
+                wordClassName="text-[clamp(1.25rem,2.2vw,1.75rem)] font-semibold leading-[1.25] tracking-tight text-white"
+              />
+              <p className="mt-3 text-sm text-white/45">
+                — {profile.heroQuote.author}
+              </p>
+
+              <p className="mt-8 text-sm leading-relaxed text-white/60 md:text-[15px]">
+                {profile.shortBio}
+              </p>
+            </div>
           </motion.div>
 
           <motion.div
             style={{ x: copyX, opacity: copyOpacity }}
-            className="max-w-md will-change-transform lg:justify-self-end"
+            className="grid grid-cols-2 gap-x-6 gap-y-12 self-center will-change-transform sm:gap-x-12 lg:gap-y-20"
           >
-            <TrueFocus
-              segments={["“Less,", "but better.”"]}
-              borderColor="#ff2d55"
-              glowColor="rgba(255, 45, 85, 0.55)"
-              blurAmount={4}
-              animationDuration={0.45}
-              pauseBetweenAnimations={1.2}
-              className="justify-start gap-x-2"
-              wordClassName="text-[clamp(1.25rem,2.2vw,1.75rem)] font-semibold leading-[1.25] tracking-tight text-white"
-            />
-            <p className="mt-3 text-sm text-white/45">
-              — {profile.heroQuote.author}
-            </p>
-            <p className="mt-8 text-sm leading-relaxed text-white/60 md:text-[15px]">
-              {profile.summary}
-            </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/10 pt-6 text-sm">
-              <p>
-                <span className="text-white/35">Based in</span>{" "}
-                <span className="text-white">{profile.location}</span>
-              </p>
-              <p>
-                <span className="text-white/35">Focus</span>{" "}
-                <span className="text-white">{profile.title}</span>
-              </p>
-            </div>
-
-            <div className="mt-8">
-              <SpecularButton
-                size="lg"
-                radius={999}
-                tint="#ff2d55"
-                tintOpacity={0}
-                blur={0}
-                textColor="#ff2d55"
-                lineColor="#ff2d55"
-                baseColor="#3a3a3a"
-                intensity={1}
-                shineSize={10}
-                shineFade={40}
-                thickness={1}
-                speed={0.35}
-                followMouse
-                proximity={250}
-                autoAnimate={false}
-                className="px-7! py-3! text-xs! font-semibold uppercase tracking-[0.18em]"
-                onClick={() => {
-                  const link = document.createElement("a");
-                  link.href = profile.resumeUrl;
-                  link.download = "";
-                  link.click();
-                }}
-              >
-                <span className="inline-flex items-center gap-2">
-                  Download CV
-                  <Download className="h-4 w-4" />
+            {stats.map((stat) => (
+              <div key={stat.label}>
+                <p className="text-5xl font-extrabold tracking-[-0.04em] text-white tabular-nums md:text-7xl">
+                  <CountUp value={stat.value} />
+                  <span className="text-accent">{stat.suffix}</span>
+                </p>
+                <span className="mt-5 inline-block rounded-full bg-white/[0.08] px-3 py-1.5 text-[10px] sm:mt-6 sm:px-3.5 sm:text-[11px] font-medium uppercase tracking-[0.14em] text-white/80">
+                  {stat.label.replace("\n", " ")}
                 </span>
-              </SpecularButton>
-            </div>
+                <p className="mt-3 max-w-[16rem] text-sm leading-relaxed text-white/55">
+                  {stat.description}
+                </p>
+              </div>
+            ))}
           </motion.div>
         </div>
-
-        {/* Stats */}
-        <motion.div
-          className="mt-16 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-md will-change-transform sm:grid-cols-4 lg:mt-20"
-          style={{ opacity: statsOpacity, y: statsY }}
-        >
-          {stats.map((stat, i) => (
-            <div
-              key={stat.label}
-              className={cn(
-                "group relative px-5 py-7 transition-colors duration-500 hover:bg-white/[0.03] md:px-7 md:py-9",
-                // hairline dividers between cells
-                i % 2 === 0 && "border-r border-white/10",
-                i < 2 && "border-b border-white/10 sm:border-b-0",
-                i === 1 && "sm:border-r"
-              )}
-            >
-              <span
-                aria-hidden
-                className="absolute inset-x-6 top-0 h-px origin-left scale-x-0 bg-linear-to-r from-accent to-transparent transition-transform duration-700 group-hover:scale-x-100"
-              />
-              <p className="text-4xl font-extrabold tracking-[-0.04em] text-white tabular-nums md:text-5xl">
-                <CountUp value={stat.value} />
-                <span className="text-accent">{stat.suffix}</span>
-              </p>
-              <p className="mt-3 whitespace-pre-line text-[11px] uppercase leading-snug tracking-[0.18em] text-white/45">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </motion.div>
 
         {/* Experience — cinematic vertical timeline */}
         <motion.div

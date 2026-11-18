@@ -10,6 +10,8 @@ export const profile = {
   github: "https://github.com/mohdalthaf",
   summary:
     "Front-end engineer building scalable web applications — from pixel-accurate, accessible interfaces to the REST APIs and auth flows behind them. I work mainly in React and Next.js, but I'm just as comfortable in PHP and Spring Boot when a feature needs a backend.",
+  shortBio:
+    "Front-end engineer building fast, accessible web apps in React and Next.js — and comfortable on the backend when a feature needs it.",
   heroTagline:
     "Frontend-focused Full Stack Developer from India. Building fast, accessible interfaces one commit at a time.",
   heroDescription:
@@ -23,10 +25,30 @@ export const profile = {
 };
 
 export const stats = [
-  { value: 1, suffix: "+", label: "Years of\nexperience" },
-  { value: 6, suffix: "+", label: "Projects\nshipped" },
-  { value: 5, suffix: "+", label: "Technologies\nMastered" },
-  { value: 500, suffix: "+", label: "Code\nCommits" },
+  {
+    value: 1,
+    suffix: "+",
+    label: "Years of\nexperience",
+    description: "Shipping production interfaces for fintech and SaaS teams",
+  },
+  {
+    value: 6,
+    suffix: "+",
+    label: "Projects\nshipped",
+    description: "From marketing sites to full stack platforms",
+  },
+  {
+    value: 5,
+    suffix: "+",
+    label: "Technologies\nMastered",
+    description: "React, Next.js, Node.js, Tailwind and more",
+  },
+  {
+    value: 500,
+    suffix: "+",
+    label: "Code\nCommits",
+    description: "Steady, reviewed work — one commit at a time",
+  },
 ];
 
 export const experience = [
@@ -86,6 +108,7 @@ export const education = [
 export const projects = [
   {
     id: "01",
+    slug: "veeble",
     title: "Veeble Softech Website",
     role: "Frontend Developer",
     period: "Feb 2025 — Present",
@@ -97,9 +120,22 @@ export const projects = [
   },
   {
     id: "02",
+    slug: "extravelmoney",
+    title: "ExTravelMoney",
+    role: "Frontend Developer",
+    period: "Aug 2025 — Jun 2026",
+    description:
+      "A secure forex ordering system processing 500+ transactions monthly with 99.9% uptime, built on a white-label theme system so it can be deployed across different businesses.",
+    stack: ["JavaScript", "HTML", "CSS", "Tailwind CSS", "REST APIs", "Lighthouse"],
+    links: { github: null, live: "https://www.extravelmoney.com/" },
+    previews: ["/assets/work/extravelmoney-thumb.webp"],
+  },
+  {
+    id: "03",
+    slug: "voltreserve",
     title: "VoltReserve",
     role: "Full Stack Developer",
-    period: "2025",
+    period: "Jul 2026 — Aug 2026",
     description:
       "A full stack platform for finding and reserving EV charging stations. Built station discovery, booking, and availability flows with a React frontend, Node.js API, and MongoDB.",
     stack: ["React", "Node.js", "Express.js", "MongoDB", "REST APIs", "Tailwind CSS"],
@@ -110,7 +146,8 @@ export const projects = [
     previews: ["/assets/work/voltreserve-thumb.webp"],
   },
   {
-    id: "03",
+    id: "04",
+    slug: "volty",
     title: "Volty",
     role: "Full Stack Developer",
     period: "2025",
@@ -121,7 +158,8 @@ export const projects = [
     previews: ["/assets/work/volty-thumb.webp"],
   },
   {
-    id: "04",
+    id: "05",
+    slug: "nestora",
     title: "Nestora — Real Estate App",
     role: "Full Stack Developer",
     period: "Mar 2026 — Apr 2026",
@@ -132,7 +170,8 @@ export const projects = [
     previews: ["/assets/work/nestora-thumb.webp"],
   },
   {
-    id: "05",
+    id: "06",
+    slug: "velvet-pour",
     title: "Velvet Pour",
     role: "Frontend Developer",
     period: "Dec 2024 — Jan 2025",
