@@ -2,13 +2,18 @@
 
 import { motion } from "framer-motion";
 
+const ease = [0.22, 1, 0.36, 1] as const;
+
 export function SectionHeading({
   title,
+  titleMuted,
   description,
   eyebrow,
   className = "max-w-2xl",
 }: {
   title: string;
+  /** Optional second line rendered in a softer tone (editorial two-tone). */
+  titleMuted?: string;
   description?: string;
   eyebrow?: string;
   className?: string;
@@ -18,14 +23,32 @@ export function SectionHeading({
       initial={{ opacity: 0, y: 28 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10%" }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.7, ease }}
       className={className}
     >
-      <h2 className="text-[clamp(2rem,4.5vw,3.25rem)] font-extrabold tracking-[-0.03em] text-foreground">
+      {eyebrow && (
+        <div className="mb-5 flex items-center gap-3">
+          <motion.span
+            aria-hidden
+            className="h-px w-10 origin-left bg-accent"
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.15, ease }}
+          />
+          <p className="text-xs font-medium uppercase tracking-[0.28em] text-accent">
+            {eyebrow}
+          </p>
+        </div>
+      )}
+      <h2 className="text-[clamp(2.25rem,5vw,3.75rem)] font-extrabold leading-[1.02] tracking-[-0.04em] text-foreground">
         {title}
+        {titleMuted && (
+          <span className="block text-white/40">{titleMuted}</span>
+        )}
       </h2>
       {description && (
-        <p className="mt-5 max-w-xl text-sm leading-relaxed text-muted md:text-base">
+        <p className="mt-6 max-w-xl text-sm leading-relaxed text-white/55 md:text-base">
           {description}
         </p>
       )}

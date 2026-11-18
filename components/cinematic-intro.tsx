@@ -1,17 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type RefObject,
-} from "react";
-import {
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import type { RefObject } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ChevronDown, Download, Github, Linkedin, Mail } from "lucide-react";
 import { heroCopy, profile } from "@/lib/data";
 import { ScrollFrameCanvas } from "@/components/scroll-frame-canvas";
@@ -25,9 +15,8 @@ export function CinematicBackdrop({
   trackRef: RefObject<HTMLElement | null>;
   introRef: RefObject<HTMLElement | null>;
 }) {
-  const [progress, setProgress] = useState(0);
-  const mountedRef = useRef(false);
-
+  // Motion values are passed straight to the canvas — scrolling never
+  // re-renders this tree.
   const { scrollYProgress } = useScroll({
     target: trackRef,
     offset: ["start start", "end end"],
@@ -36,19 +25,6 @@ export function CinematicBackdrop({
   const { scrollYProgress: introProgress } = useScroll({
     target: introRef,
     offset: ["start start", "end end"],
-  });
-
-  useEffect(() => {
-    mountedRef.current = true;
-    setProgress(scrollYProgress.get());
-    return () => {
-      mountedRef.current = false;
-    };
-  }, [scrollYProgress]);
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (!mountedRef.current) return;
-    setProgress(v);
   });
 
   // Zoom in through mid-intro, then zoom back out into About.
@@ -72,7 +48,10 @@ export function CinematicBackdrop({
           y: 36,
         }}
       >
-        <ScrollFrameCanvas progress={progress} className="h-full w-full" />
+        <ScrollFrameCanvas
+          progress={scrollYProgress}
+          className="h-full w-full"
+        />
       </motion.div>
 
       {/* Soft side grades so left/right copy stays readable */}
@@ -88,26 +67,12 @@ export function CinematicIntro({
 }: {
   sectionRef: RefObject<HTMLElement | null>;
 }) {
-  const mountedRef = useRef(false);
-  const [progress, setProgress] = useState(0);
-
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end end"],
   });
 
-  useEffect(() => {
-    mountedRef.current = true;
-    setProgress(scrollYProgress.get());
-    return () => {
-      mountedRef.current = false;
-    };
-  }, [scrollYProgress]);
-
-  useMotionValueEvent(scrollYProgress, "change", (v) => {
-    if (!mountedRef.current) return;
-    setProgress(v);
-  });
+  const cueOpacity = useTransform(scrollYProgress, [0, 0.25], [1, 0]);
 
   // Phase 2: heading drifts left
   const headingX = useTransform(scrollYProgress, [0.15, 0.55], [0, -120]);
@@ -213,13 +178,13 @@ export function CinematicIntro({
         </motion.div>
 
         {/* Phase progress cue */}
-        <div
+        <motion.div
           aria-hidden
           className="pointer-events-none absolute bottom-6 left-1/2 z-20 -translate-x-1/2 text-white/35"
-          style={{ opacity: Math.max(0, 1 - progress * 4) }}
+          style={{ opacity: cueOpacity }}
         >
           <ChevronDown className="h-4 w-4 animate-bounce" />
-        </div>
+        </motion.div>
       </div>
     </section>
   );

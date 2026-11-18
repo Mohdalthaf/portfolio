@@ -93,7 +93,7 @@ export const projects = [
       "A complete UI/UX overhaul for Veeble's website. The project focused on modernizing the design, improving Core Web Vitals, and enhancing interactivity to deliver a superior user experience.",
     stack: ["JavaScript", "HTML", "CSS", "Tailwind CSS", "REST APIs", "Lighthouse"],
     links: { github: "https://github.com/mohdalthaf", live: "https://www.veeble.com/in/" },
-    previews: ["/assets/work/veeble-thumb.png"],
+    previews: ["/assets/work/veeble-thumb.webp"],
   },
   {
     id: "02",
@@ -107,7 +107,7 @@ export const projects = [
       github: "https://github.com/orgs/VoltReserve/repositories",
       live: "https://voltreserve-alpha.vercel.app/login",
     },
-    previews: ["/assets/work/voltreserve-thumb.png"],
+    previews: ["/assets/work/voltreserve-thumb.webp"],
   },
   {
     id: "03",
@@ -118,7 +118,7 @@ export const projects = [
       "An AI-powered admin dashboard for operations and insights. Built analytics views, intelligent admin workflows, and a responsive control panel for managing day-to-day system activity.",
     stack: ["React", "Node.js", "MongoDB", "REST APIs", "Tailwind CSS"],
     links: { github: "https://github.com/mohdalthaf", live: "https://voltreserve-alpha.vercel.app/admin-login"},
-    previews: ["/assets/work/volty-thumb.png"],
+    previews: ["/assets/work/volty-thumb.webp"],
   },
   {
     id: "04",
@@ -129,7 +129,7 @@ export const projects = [
       "A cross-platform real estate application with secure authentication, property listings, and responsive UI. Integrated Clerk for auth and Supabase for backend data, with production builds shipped via Expo EAS.",
     stack: ["React Native", "Expo", "Clerk", "Supabase", "Tailwind CSS"],
     links: { github: "https://github.com/mohdalthaf", live: "https://github.com/mohdalthaf" },
-    previews: ["/assets/work/nestora-thumb.png"],
+    previews: ["/assets/work/nestora-thumb.webp"],
   },
   {
     id: "05",
@@ -140,7 +140,7 @@ export const projects = [
       "An interactive cocktail brand landing page with GSAP scroll animations, parallax effects, and video scrolling — built mobile-first with reusable React components.",
     stack: ["React", "Vite", "GSAP", "Tailwind CSS", "JavaScript (ES6+)"],
     links: { github: "https://github.com/mohdalthaf", live: null },
-    previews: ["/assets/work/velvet-thumb.png"],
+    previews: ["/assets/work/velvet-thumb.webp"],
   },
 ];
 

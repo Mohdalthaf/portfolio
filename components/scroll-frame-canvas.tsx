@@ -1,11 +1,7 @@
 "use client";
 
-import {
-  useEffect,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import type { MotionValue } from "framer-motion";
 import {
   SCROLL_FRAME_COUNT,
   SCROLL_FRAME_START,
@@ -14,13 +10,36 @@ import {
 } from "@/lib/scroll-frames";
 
 type ScrollFrameCanvasProps = {
-  progress: number;
+  /** 0–1 scroll progress. Read directly — no React re-render per scroll tick. */
+  progress: MotionValue<number>;
   className?: string;
   style?: CSSProperties;
   onReady?: () => void;
 };
 
-const PRELOAD_AHEAD = 24;
+/** Parallel image requests while preloading the sequence. */
+const CONCURRENCY = 6;
+/** Frames around the current position that jump to the front of the queue. */
+const PRIORITY_WINDOW = 10;
+
+/**
+ * Coarse-to-fine load order: every 32nd frame first, then 16th, 8th … 1st.
+ * Wherever the user scrolls, a nearby frame is available almost immediately
+ * and the sequence sharpens in place as the gaps fill.
+ */
+function buildLoadOrder() {
+  const order: number[] = [];
+  const seen = new Set<number>();
+  for (let step = 32; step >= 1; step = Math.floor(step / 2)) {
+    for (let f = SCROLL_FRAME_START; f <= SCROLL_FRAME_COUNT; f += step) {
+      if (!seen.has(f)) {
+        seen.add(f);
+        order.push(f);
+      }
+    }
+  }
+  return order;
+}
 
 export function ScrollFrameCanvas({
   progress,
@@ -29,188 +48,176 @@ export function ScrollFrameCanvas({
   onReady,
 }: ScrollFrameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const imagesRef = useRef<(HTMLImageElement | null)[]>(
-    Array.from({ length: SCROLL_FRAME_COUNT + 1 }, () => null)
-  );
-  const loadingRef = useRef<Set<number>>(new Set());
-  const drawnFrameRef = useRef(0);
-  const readyNotified = useRef(false);
-  const progressRef = useRef(progress);
   const [ready, setReady] = useState(false);
+  const onReadyRef = useRef(onReady);
+  useEffect(() => {
+    onReadyRef.current = onReady;
+  }, [onReady]);
 
-  progressRef.current = progress;
-
-  const drawFrame = (frame: number) => {
+  useEffect(() => {
     const canvas = canvasRef.current;
-    const img = imagesRef.current[frame];
-    if (!canvas || !img?.complete || !img.naturalWidth) return false;
-
+    if (!canvas) return;
     const ctx = canvas.getContext("2d", { alpha: false });
-    if (!ctx) return false;
+    if (!ctx) return;
 
-    const w = canvas.clientWidth;
-    const h = canvas.clientHeight;
-    if (w < 2 || h < 2) return false;
+    let cancelled = false;
+    let readyNotified = false;
+    let rafId = 0;
+    let drawnFrame = -1;
+    let cssW = 0;
+    let cssH = 0;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const targetW = Math.round(w * dpr);
-    const targetH = Math.round(h * dpr);
-    if (canvas.width !== targetW || canvas.height !== targetH) {
-      canvas.width = targetW;
-      canvas.height = targetH;
-    }
+    const images: (HTMLImageElement | null)[] = new Array(
+      SCROLL_FRAME_COUNT + 1
+    ).fill(null);
+    const requested = new Set<number>();
+    const queue = buildLoadOrder();
+    let inFlight = 0;
 
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = "#050505";
-    ctx.fillRect(0, 0, w, h);
-
-    const scale = Math.max(w / img.naturalWidth, h / img.naturalHeight);
-    const dw = img.naturalWidth * scale;
-    const dh = img.naturalHeight * scale;
-    const dx = (w - dw) / 2;
-    // Bias portrait downward so the head sits below the fixed navbar
-    const dy = (h - dh) / 2 + h * 0.08;
-    ctx.drawImage(img, dx, dy, dw, dh);
-    drawnFrameRef.current = frame;
-    return true;
-  };
-
-  const markReady = () => {
-    if (readyNotified.current) return;
-    readyNotified.current = true;
-    // Defer so we never setState during another component's render/commit.
-    queueMicrotask(() => {
-      setReady(true);
-      onReady?.();
-    });
-  };
-
-  const loadFrame = (frame: number) =>
-    new Promise<boolean>((resolve) => {
-      if (frame < SCROLL_FRAME_START || frame > SCROLL_FRAME_COUNT) {
-        resolve(false);
-        return;
+    const resize = () => {
+      const w = canvas.clientWidth;
+      const h = canvas.clientHeight;
+      if (w < 2 || h < 2) return false;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cssW = w;
+      cssH = h;
+      const targetW = Math.round(w * dpr);
+      const targetH = Math.round(h * dpr);
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.imageSmoothingQuality = "high";
+        drawnFrame = -1; // canvas was cleared by the resize
       }
-      const cached = imagesRef.current[frame];
-      if (cached?.complete && cached.naturalWidth) {
-        resolve(true);
-        return;
-      }
-      if (loadingRef.current.has(frame)) {
-        resolve(false);
-        return;
-      }
+      return true;
+    };
 
-      loadingRef.current.add(frame);
+    /** Closest frame to `target` that has finished loading and decoding. */
+    const nearestLoaded = (target: number) => {
+      if (images[target]) return target;
+      for (let d = 1; d <= SCROLL_FRAME_COUNT; d += 1) {
+        const lo = target - d;
+        const hi = target + d;
+        if (lo >= SCROLL_FRAME_START && images[lo]) return lo;
+        if (hi <= SCROLL_FRAME_COUNT && images[hi]) return hi;
+        if (lo < SCROLL_FRAME_START && hi > SCROLL_FRAME_COUNT) break;
+      }
+      return -1;
+    };
+
+    const draw = () => {
+      rafId = 0;
+      if (cancelled) return;
+      if (!cssW && !resize()) return;
+
+      const frame = nearestLoaded(progressToFrame(progress.get()));
+      if (frame < 0 || frame === drawnFrame) return;
+      const img = images[frame]!;
+
+      ctx.fillStyle = "#050505";
+      ctx.fillRect(0, 0, cssW, cssH);
+      const scale = Math.max(
+        cssW / img.naturalWidth,
+        cssH / img.naturalHeight
+      );
+      const dw = img.naturalWidth * scale;
+      const dh = img.naturalHeight * scale;
+      const dx = (cssW - dw) / 2;
+      // Bias portrait downward so the head sits below the fixed navbar
+      const dy = (cssH - dh) / 2 + cssH * 0.08;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      drawnFrame = frame;
+
+      if (!readyNotified) {
+        readyNotified = true;
+        setReady(true);
+        onReadyRef.current?.();
+      }
+    };
+
+    const scheduleDraw = () => {
+      if (!rafId) rafId = requestAnimationFrame(draw);
+    };
+
+    const load = (frame: number) => {
+      requested.add(frame);
+      inFlight += 1;
       const img = new Image();
       img.decoding = "async";
-      if (frame <= 12) {
-        // Prioritize early frames for first paint
-        try {
-          (img as HTMLImageElement & { fetchPriority?: string }).fetchPriority =
-            "high";
-        } catch {
-          // ignore older browsers
-        }
+      if (frame === SCROLL_FRAME_START) {
+        img.fetchPriority = "high";
       }
       img.src = getScrollFrameSrc(frame);
-      img.onload = () => {
-        imagesRef.current[frame] = img;
-        loadingRef.current.delete(frame);
-        resolve(true);
-      };
-      img.onerror = () => {
-        loadingRef.current.delete(frame);
-        resolve(false);
-      };
-    });
+      // decode() resolves once the bitmap is ready, so drawImage never
+      // blocks the main thread mid-scroll.
+      img
+        .decode()
+        .then(() => {
+          if (cancelled) return;
+          images[frame] = img;
+          scheduleDraw();
+        })
+        .catch(() => {
+          // Leave the slot empty; nearestLoaded() will fall back.
+        })
+        .finally(() => {
+          inFlight -= 1;
+          if (!cancelled) pump();
+        });
+    };
 
-  const paintCurrent = () => {
-    const target = progressToFrame(progressRef.current);
-    if (drawFrame(target)) {
-      markReady();
-      return;
-    }
-    for (let offset = 1; offset < 32; offset += 1) {
-      const lo = target - offset;
-      const hi = target + offset;
-      if (lo >= SCROLL_FRAME_START && drawFrame(lo)) {
-        markReady();
-        return;
+    const pump = () => {
+      while (inFlight < CONCURRENCY && queue.length) {
+        const next = queue.shift()!;
+        if (!requested.has(next)) load(next);
       }
-      if (hi <= SCROLL_FRAME_COUNT && drawFrame(hi)) {
-        markReady();
-        return;
-      }
-    }
-  };
+    };
 
-  useEffect(() => {
-    let cancelled = false;
-    let preloadCursor = SCROLL_FRAME_START + 1;
-
-    const bootstrap = async () => {
-      const ok = await loadFrame(SCROLL_FRAME_START);
-      if (cancelled) return;
-
-      // Wait a frame so sticky layout has real dimensions
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
-      if (cancelled) return;
-
-      if (ok) paintCurrent();
-
-      // Sparse keyframes for scrubbing ahead of full preload
-      for (const key of [30, 60, 90, 120, 150, 180, 210, 240, 270, 300]) {
-        if (cancelled) return;
-        await loadFrame(key);
-      }
-
-      // Fill opening sequence densely
-      while (preloadCursor <= 60 && !cancelled) {
-        await loadFrame(preloadCursor);
-        preloadCursor += 1;
-        if (preloadCursor % 6 === 0) {
-          await new Promise<void>((r) => requestAnimationFrame(() => r()));
+    /** Move frames near the current scroll position to the front of the queue. */
+    const prioritize = () => {
+      const target = progressToFrame(progress.get());
+      const urgent: number[] = [];
+      for (let d = 0; d <= PRIORITY_WINDOW; d += 1) {
+        for (const f of d === 0 ? [target] : [target + d, target - d]) {
+          if (
+            f >= SCROLL_FRAME_START &&
+            f <= SCROLL_FRAME_COUNT &&
+            !requested.has(f)
+          ) {
+            urgent.push(f);
+          }
         }
       }
-    };
-
-    bootstrap();
-
-    const onResize = () => paintCurrent();
-    window.addEventListener("resize", onResize);
-
-    const ro = new ResizeObserver(() => paintCurrent());
-    if (canvasRef.current) ro.observe(canvasRef.current);
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("resize", onResize);
-      ro.disconnect();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    paintCurrent();
-
-    const target = progressToFrame(progress);
-    const start = Math.max(SCROLL_FRAME_START, target - 2);
-    const end = Math.min(SCROLL_FRAME_COUNT, target + PRELOAD_AHEAD);
-
-    let cancelled = false;
-    (async () => {
-      for (let i = start; i <= end; i += 1) {
-        if (cancelled) return;
-        await loadFrame(i);
-        if (i === target || i % 4 === 0) paintCurrent();
+      if (urgent.length) {
+        queue.unshift(...urgent);
+        pump();
       }
-    })();
+    };
+
+    // First paint: the frame matching the current scroll position.
+    const initial = progressToFrame(progress.get());
+    queue.unshift(initial);
+    if (initial !== SCROLL_FRAME_START) queue.unshift(SCROLL_FRAME_START);
+    pump();
+
+    const unsubscribe = progress.on("change", () => {
+      scheduleDraw();
+      prioritize();
+    });
+
+    const ro = new ResizeObserver(() => {
+      cssW = 0;
+      scheduleDraw();
+    });
+    ro.observe(canvas);
 
     return () => {
       cancelled = true;
+      unsubscribe();
+      ro.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [progress]);
 
   return (

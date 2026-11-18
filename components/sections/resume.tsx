@@ -1,11 +1,14 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  animate,
   motion,
+  useInView,
   useScroll,
   useTransform,
 } from "framer-motion";
+import { cn } from "@/lib/utils";
 import { Download } from "lucide-react";
 import SpecularButton from "@/components/SpecularButton";
 import TrueFocus from "@/components/TrueFocus";
@@ -21,6 +24,28 @@ import {
 } from "@/components/ui/dialog";
 
 type ExperienceItem = (typeof experience)[number];
+
+/** Counts from 0 to `value` once it scrolls into view. */
+function CountUp({ value }: { value: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, amount: 0.6 });
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !inView) return;
+    const controls = animate(0, value, {
+      duration: value > 50 ? 1.8 : 1.2,
+      ease: [0.22, 1, 0.36, 1],
+      onUpdate: (v) => {
+        el.textContent = Math.round(v).toLocaleString();
+      },
+    });
+    return () => controls.stop();
+  }, [inView, value]);
+
+  // Render the final value for SSR / no-JS; the effect animates it in.
+  return <span ref={ref}>{value.toLocaleString()}</span>;
+}
 
 function ExperienceModal({
   job,
@@ -254,16 +279,29 @@ export function Resume() {
 
         {/* Stats */}
         <motion.div
-          className="mt-16 grid grid-cols-2 gap-6 border-t border-white/10 pt-10 will-change-transform sm:grid-cols-4 sm:gap-4 lg:mt-20"
+          className="mt-16 grid grid-cols-2 overflow-hidden rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-md will-change-transform sm:grid-cols-4 lg:mt-20"
           style={{ opacity: statsOpacity, y: statsY }}
         >
-          {stats.map((stat) => (
-            <div key={stat.label} className="text-center">
-              <p className="text-2xl font-bold tracking-tight text-white md:text-3xl">
-                {stat.value}
+          {stats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className={cn(
+                "group relative px-5 py-7 transition-colors duration-500 hover:bg-white/[0.03] md:px-7 md:py-9",
+                // hairline dividers between cells
+                i % 2 === 0 && "border-r border-white/10",
+                i < 2 && "border-b border-white/10 sm:border-b-0",
+                i === 1 && "sm:border-r"
+              )}
+            >
+              <span
+                aria-hidden
+                className="absolute inset-x-6 top-0 h-px origin-left scale-x-0 bg-linear-to-r from-accent to-transparent transition-transform duration-700 group-hover:scale-x-100"
+              />
+              <p className="text-4xl font-extrabold tracking-[-0.04em] text-white tabular-nums md:text-5xl">
+                <CountUp value={stat.value} />
                 <span className="text-accent">{stat.suffix}</span>
               </p>
-              <p className="mt-1 whitespace-pre-line text-xs leading-snug text-white/50">
+              <p className="mt-3 whitespace-pre-line text-[11px] uppercase leading-snug tracking-[0.18em] text-white/45">
                 {stat.label}
               </p>
             </div>

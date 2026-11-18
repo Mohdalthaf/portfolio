@@ -15,6 +15,8 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 type Project = (typeof projects)[number];
 
+const PROJECTS_TOTAL = String(projects.length).padStart(2, "0");
+
 function ProjectCard({
   project,
   index,
@@ -37,17 +39,31 @@ function ProjectCard({
       viewport={{ once: true, amount: 0.25 }}
       transition={{ duration: 0.65, delay: index * 0.1, ease }}
       className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-[1.75rem]",
+        "group relative cursor-pointer overflow-hidden rounded-[1.75rem] ring-1 ring-white/10 transition-[box-shadow,transform] duration-500 ease-out hover:-translate-y-1 hover:shadow-[0_30px_80px_-30px_rgba(255,45,85,0.45)] hover:ring-accent/40",
+        isOpen && "ring-accent/40",
         className
       )}
       onClick={onToggle}
     >
       <div className="relative aspect-3/4 w-full overflow-hidden bg-white/5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {/* Editorial index */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-5 top-5 z-10 rounded-full border border-white/15 bg-black/40 px-3 py-1 text-[11px] font-semibold tracking-[0.2em] text-white/80 backdrop-blur-md md:left-6 md:top-6"
+        >
+          {project.id}
+          <span className="text-white/35"> / {PROJECTS_TOTAL}</span>
+        </span>
         {image ? (
+          // Pre-optimized WebP (900px) — plain <img> is intentional.
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={image}
             alt={project.title}
+            width={900}
+            height={1200}
+            loading="lazy"
+            decoding="async"
             className={cn(
               "h-full w-full object-cover transition-[transform,opacity] duration-700 ease-out group-hover:scale-[1.03] group-hover:opacity-35",
               isOpen && "scale-[1.03] opacity-35"

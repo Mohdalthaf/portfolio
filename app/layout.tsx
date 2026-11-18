@@ -2,6 +2,7 @@ import "devicon/devicon.min.css";
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
 import { siteConfig, siteUrl } from "@/lib/site";
+import { SCROLL_FRAME_START, getScrollFrameSrc } from "@/lib/scroll-frames";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -65,6 +66,16 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        {/* First hero frame — start fetching before JS hydrates */}
+        <link
+          rel="preload"
+          as="image"
+          type="image/webp"
+          href={getScrollFrameSrc(SCROLL_FRAME_START)}
+          fetchPriority="high"
+        />
+      </head>
       <body className={`${jetbrainsMono.variable} antialiased`}>
         {children}
       </body>

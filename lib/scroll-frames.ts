@@ -2,12 +2,16 @@ export const SCROLL_FRAME_START = 3;
 export const SCROLL_FRAME_COUNT = 300;
 export const SCROLL_FRAME_DIR = "/scroll-animation-frames";
 
-export function getScrollFrameSrc(index: number) {
-  const frame = Math.min(
+function clampFrame(index: number) {
+  return Math.min(
     SCROLL_FRAME_COUNT,
     Math.max(SCROLL_FRAME_START, Math.round(index))
   );
-  return `${SCROLL_FRAME_DIR}/ezgif-frame-${String(frame).padStart(3, "0")}.png`;
+}
+
+export function getScrollFrameSrc(index: number) {
+  const frame = clampFrame(index);
+  return `${SCROLL_FRAME_DIR}/frame-${String(frame).padStart(3, "0")}.webp`;
 }
 
 /** Map a 0–1 progress value to a 1-based frame index. */

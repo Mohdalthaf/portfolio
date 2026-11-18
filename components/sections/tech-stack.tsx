@@ -82,7 +82,9 @@ export function TechStack() {
       <div className="relative mx-auto w-full max-w-6xl px-6 md:px-10">
         <SectionHeading
           className="max-w-2xl"
-          title="Tools of the craft"
+          eyebrow="Tech Stack"
+          title="Tools of"
+          titleMuted="the craft."
           description="The languages, frameworks, and tools I reach for when building products that need to look sharp and hold up in production."
         />
 
